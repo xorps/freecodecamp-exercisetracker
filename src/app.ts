@@ -86,7 +86,7 @@ app.post('/api/exercise/add', async (req, res) => {
             _id: String(saved_exercise.user!._id),
             username: saved_exercise.user!.username,
             description: saved_exercise.description,
-            duration: saved_exercise.duration,
+            duration: String(saved_exercise.duration),
             date: saved_exercise.date
         });
     } catch (err) {
@@ -120,7 +120,7 @@ app.get('/api/exercise/log', async (req, res) => {
         _id: String(user._id!),
         username: user.username!,
         count: exercises.length,
-        log: exercises.map(it => ({date: it.date, duration: it.duration, description: it.description}))
+        log: exercises.map(it => ({date: it.date, duration: String(it.duration), description: it.description}))
     });
 });
 
