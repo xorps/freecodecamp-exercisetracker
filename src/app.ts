@@ -18,17 +18,19 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/exercise/new-user', async (req, res) => {
+    const _ = await connection;
     const {username} = req.body;
-    if (typeof username === "string" && username.length > 0) {
-        const _ = await connection;
-        let user = new User();
-        user.username = username;
-        user = await user.save();
-        // freeCodeCamp expects _id as a string
-        res.send({_id: String(user._id), username: user.username});
-    } else {
-        res.send({error: "invalid username"});
+    if (typeof username !== "string" || username.length < 1)  {
+        return res.send({error: "invalid username"});
     }
+    let user = await User.findOne({username});
+    if (user) {
+        return res.send({error: "username taken"});
+    }
+    user = new User();
+    user.username = username;
+    user = await user.save();
+    res.send({_id: String(user._id), username: user.username});
 });
 
 app.get('/api/exercise/users', async (req, res) => {

@@ -6,6 +6,8 @@ test('You can POST to /api/exercise/new-user with form data username to create a
     const response = await request(app).post('/api/exercise/new-user').type('form').send({username: 'myuser'});
     expect(response.body).toHaveProperty('username', 'myuser');
     expect(response.body).toHaveProperty('_id');
+    const response_2 = await request(app).post('/api/exercise/new-user').type('form').send({username: 'myuser'});
+    expect(response_2.body).toMatchObject({error: "username taken"});
 });
 
 test("You can make a GET request to api/exercise/users to get an array of all users. Each element in the array is an object containing a user's username and _id", async () => {
