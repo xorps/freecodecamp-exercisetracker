@@ -24,7 +24,8 @@ app.post('/api/exercise/new-user', async (req, res) => {
         let user = new User();
         user.username = username;
         user = await user.save();
-        res.send({_id: user._id, username: user.username});
+        // freeCodeCamp expects _id as a string
+        res.send({_id: String(user._id), username: user.username});
     } else {
         res.send({error: "invalid username"});
     }
@@ -33,7 +34,8 @@ app.post('/api/exercise/new-user', async (req, res) => {
 app.get('/api/exercise/users', async (req, res) => {
     const _ = await connection;
     const users = await User.find();
-    res.send(users);
+    // freeCodeCamp expects _id as a string
+    res.send(users.map(it => ({_id: String(it._id), username: it.username})));
 });
 
 app.post('/api/exercise/add', async (req, res) => {
@@ -79,8 +81,9 @@ app.post('/api/exercise/add', async (req, res) => {
         exercise.date = date;
         exercise.user = await User.findOne(userId);
         const saved_exercise = await exercise.save();
+        // freeCodeCamp expects _id as a string
         res.send({
-            _id: saved_exercise.user!._id,
+            _id: String(saved_exercise.user!._id),
             username: saved_exercise.user!.username,
             description: saved_exercise.description,
             duration: saved_exercise.duration,
@@ -112,8 +115,9 @@ app.get('/api/exercise/log', async (req, res) => {
         query = query.limit(limit);
     }
     const exercises = await query.getMany();
+    // freeCodeCamp expects _id as a String
     res.send({
-        _id: user._id!,
+        _id: String(user._id!),
         username: user.username!,
         count: exercises.length,
         log: exercises.map(it => ({date: it.date, duration: it.duration, description: it.description}))
