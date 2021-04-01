@@ -71,7 +71,7 @@ app.post('/api/exercise/add', async (req, res) => {
             // date is optional, use todays date if one isn't supplied.
             if (!date) return moment().format('YYYY-MM-DD');
             // validate it
-            if (!moment(date, 'YYYY-MMM-DD', true).isValid()) throw new UserError('invalid date');
+            if (!moment(date, 'YYYY-MM-DD', true).isValid()) throw new UserError('invalid date');
             return date;
         })(req.body.date);
         // TODO: there may be a better way to do this with TypeORM..
