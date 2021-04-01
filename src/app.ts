@@ -83,7 +83,7 @@ app.post('/api/exercise/add', async (req, res) => {
             _id: String(saved_exercise.user!._id),
             username: saved_exercise.user!.username,
             description: saved_exercise.description,
-            duration: saved_exercise.duration,
+            duration: String(saved_exercise.duration),
             date: saved_exercise.date
         });
     } catch (err) {
