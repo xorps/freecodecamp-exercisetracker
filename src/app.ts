@@ -57,14 +57,10 @@ app.post('/api/exercise/add', async (req, res) => {
         return typeof input === "number";
     }
 
-    async function exists(userid: any): Promise<boolean> {
-        const u = await User.findOne(userid);
-        return !!u;
-    }
-
     try {
         const {userId, description, duration} = req.body;
-        if (!exists(userId)) throw new UserError(`user ${userId} does not exist`);
+        const user = await User.findOne(userId);
+        if (!user) throw new UserError(`user ${userId} does not exist`);
         if (!is_string(description)) throw new UserError('invalid description');
         if (!is_numeric(duration)) throw new UserError('invalid duration');
         const date = ((date: any) => {
@@ -74,19 +70,18 @@ app.post('/api/exercise/add', async (req, res) => {
             if (!moment(date, 'YYYY-MM-DD', true).isValid()) throw new UserError('invalid date');
             return date;
         })(req.body.date);
-        // TODO: there may be a better way to do this with TypeORM..
         const exercise = new Exercise();
         exercise.description = description;
         exercise.duration = Number(duration);
         exercise.date = date;
-        exercise.user = await User.findOne(userId);
+        exercise.user = user;
         const saved_exercise = await exercise.save();
         // freeCodeCamp expects _id as a string
         res.send({
             _id: String(saved_exercise.user!._id),
             username: saved_exercise.user!.username,
             description: saved_exercise.description,
-            duration: String(saved_exercise.duration),
+            duration: saved_exercise.duration,
             date: saved_exercise.date
         });
     } catch (err) {
@@ -120,7 +115,7 @@ app.get('/api/exercise/log', async (req, res) => {
         _id: String(user._id!),
         username: user.username!,
         count: exercises.length,
-        log: exercises.map(it => ({date: it.date, duration: String(it.duration), description: it.description}))
+        log: exercises.map(it => ({date: it.date, duration: it.duration, description: it.description}))
     });
 });
 
